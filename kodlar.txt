@@ -1,7 +1,7 @@
--- Aetherion Auto Code Redeemer
+-- Evilion Auto Code Redeemer
 local Config = {
     SammyUserId = 2678001507, -- Verified group owner: SpyderSammy.
-    RequireSenderId = true,
+    RequireSenderId = false,
     AcceptBareParts = true, -- Unlabelled Sammy messages; false = explicit "code:" / "part 1:" only.
     AcceptSentenceParts = true, -- Collect whole announcements using the native textbox cleanup.
     MinPartLength = 1,
@@ -37,7 +37,7 @@ local Config = {
 -- Quiet preference storage; dependencies are optional executor/JSON adapters.
 function createSettingsStore(config, deps)
     config, deps = config or {}, deps or {}
-    local path = "AetherionAutoCodeRedeemer.settings.json"
+    local path = "EvilionAutoCodeRedeemer.settings.json"
     local maxBytes = 16 * 1024
     local lastCanonical
     local function finite(value)
@@ -210,7 +210,7 @@ function createRetypeReplay(config, deps)
             deps.resetCollections()
             for _, record in ipairs(selected) do
                 if not self.alive then break end
-                local syntheticId = "aetherion-retype:" .. self.generation .. ":" .. record.serial
+                local syntheticId = "evilion-retype:" .. self.generation .. ":" .. record.serial
                 deps.dispatch(record.message, record.duration, nil, "Top", record.sender, syntheticId, false)
             end
         end)
@@ -513,7 +513,7 @@ local function createEngine(config, deps, saved)
         if location ~= "Top" or remove or type(message) ~= "string" then return false end
         local sender = tonumber(senderId)
         if config.RequireSenderId and sender ~= config.SammyUserId then return false end
-        if senderId ~= nil and sender ~= config.SammyUserId then return false end
+        -- if senderId ~= nil and sender ~= config.SammyUserId then return false end
         local plain = clean(message)
         local now = deps.now()
         maintain(now)
@@ -10801,19 +10801,19 @@ local Input = game:GetService("UserInputService")
 local Tween = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
-if not player then warn("Aetherion Auto Code Redeemer: run in a client") return end
+if not player then warn("Evilion Auto Code Redeemer: run in a client") return end
 local playerGui = player:WaitForChild("PlayerGui", 20)
-if not playerGui then warn("Aetherion Auto Code Redeemer: PlayerGui not ready") return end
+if not playerGui then warn("Evilion Auto Code Redeemer: PlayerGui not ready") return end
 local env = getgenv and getgenv() or _G
-local KEY, GUI_NAME = "__aetherion_auto_code_redeemer", "AetherionAutoCodeRedeemer"
+local KEY, GUI_NAME = "__evilion_auto_code_redeemer", "EvilionAutoCodeRedeemer"
 local previous = env[KEY] or env.__private_auto_code_redeemer
-env.__aetherion_settings_store = createSettingsStore(Config, {
+env.__evilion_settings_store = createSettingsStore(Config, {
     encode = function(value) return game:GetService("HttpService"):JSONEncode(value) end,
     decode = function(value) return game:GetService("HttpService"):JSONDecode(value) end,
     read = type(readfile) == "function" and readfile or nil,
     write = type(writefile) == "function" and writefile or nil,
 })
-local saved = env.__aetherion_settings_store:load() or {}
+local saved = env.__evilion_settings_store:load() or {}
 if previous and previous.alive ~= false and not previous.closing and type(previous.snapshot) == "function" then
     local ok, snapshot = pcall(previous.snapshot)
     if ok and type(snapshot) == "table" then saved = snapshot end
@@ -10893,7 +10893,7 @@ end
 local function animate(item, properties, duration)
     local old = state.tweens[item]
     if old then old:Cancel() end
-    if state.fps and state.fps.enabled and not item:GetAttribute("aetherion_window_animation") then
+    if state.fps and state.fps.enabled and not item:GetAttribute("evilion_window_animation") then
         state.tweens[item] = nil
         for key, value in pairs(properties) do item[key] = value end
         return
@@ -11118,7 +11118,7 @@ local avatar = make("ImageLabel", profile, {Name = "avatar", Position = UDim2.fr
     Size = UDim2.fromOffset(38, 38), BackgroundColor3 = Halloween.off,
     BackgroundTransparency = 0.35, Image = "", BorderSizePixel = 0})
 round(avatar, 14) stroke(avatar, accent, 0.6)
-local title = text(header, "title", "Aetherion Auto Code Redeemer", UDim2.fromOffset(24, 26),
+local title = text(header, "title", "Evilion Auto Code Redeemer", UDim2.fromOffset(24, 26),
     UDim2.new(1, -24, 0, 26), 18, white, true)
 title.TextScaled = true
 make("UITextSizeConstraint", title, {MinTextSize = 14, MaxTextSize = 18})
@@ -11290,7 +11290,7 @@ make("UIPadding", announcementBox, {PaddingTop = UDim.new(0, 12), PaddingBottom 
 local senderStatus = text(senderBody, "status", "Shown Only On Your Screen", UDim2.fromOffset(23, 149),
     UDim2.new(1, -46, 0, 20), 11, muted)
 local send = button(senderBody, "send", "Send", UDim2.new(1, -110, 1, -52), UDim2.fromOffset(88, 32))
-for _, item in ipairs({senderWindow, senderShadow, senderBody}) do item:SetAttribute("aetherion_window_animation", true) end
+for _, item in ipairs({senderWindow, senderShadow, senderBody}) do item:SetAttribute("evilion_window_animation", true) end
 local senderPosition = saved.senderPosition
 local senderPointer, senderClosing = nil, false
 local senderCollapsed, senderEpoch = saved.senderCollapsed == true, 0
@@ -11396,7 +11396,7 @@ connect(send.Activated, function()
     end
     if type(firesignal) ~= "function" then senderStatus.Text = "Firesignal Is Required" return end
     sendNumber += 1
-    local id = "aetherion-local-test:" .. tostring(os.clock()) .. ":" .. sendNumber
+    local id = "evilion-local-test:" .. tostring(os.clock()) .. ":" .. sendNumber
     local ok = pcall(firesignal, notificationRemote.OnClientEvent, message, 4, nil, "Top", Config.SammyUserId, id, false)
     senderStatus.Text = ok and "Sent Locally" or "Could Not Send The Local Test"
     if ok then announcementBox.Text = "" end
@@ -11438,7 +11438,7 @@ local function makeToolWindow(name, title, size)
     closeButton.ZIndex = 122 closeButton.TextSize = 22
     local body = make("CanvasGroup", window, {Name = "body", Position = UDim2.fromOffset(18, 62),
         Size = UDim2.new(1, -36, 1, -74), BackgroundTransparency = 1, ZIndex = 121})
-    for _, item in ipairs({window, windowShadow, body}) do item:SetAttribute("aetherion_window_animation", true) end
+    for _, item in ipairs({window, windowShadow, body}) do item:SetAttribute("evilion_window_animation", true) end
     local windowScale = make("UIScale", window, {Scale = 1})
     local position, pointer, closing, collapsed, epoch = nil, nil, false, false, 0
     local function hide()
@@ -11543,8 +11543,8 @@ local function toolToggle(parent, name, label, y, getter, setter)
         Size = UDim2.fromOffset(16, 16), BackgroundColor3 = muted, BorderSizePixel = 0, ZIndex = 124})
     round(knob, 8)
     Halloween.knobFace(knob)
-    switch:SetAttribute("aetherion_window_animation", true)
-    knob:SetAttribute("aetherion_window_animation", true)
+    switch:SetAttribute("evilion_window_animation", true)
+    knob:SetAttribute("evilion_window_animation", true)
     local lastOn
     local function update()
         local on = getter() == true
@@ -11594,7 +11594,7 @@ for _, footerButton in ipairs({clear, senderButton, fpsButton, riddleButton, ret
     footerButton.TextSize = 13
     footerButton.TextScaled = true
     make("UITextSizeConstraint", footerButton, {MinTextSize = 10, MaxTextSize = 13})
-    footerButton:SetAttribute("aetherion_window_animation", true)
+    footerButton:SetAttribute("evilion_window_animation", true)
     make("UIPadding", footerButton, {PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12),
         PaddingTop = UDim.new(0, 3), PaddingBottom = UDim.new(0, 3)})
 end
@@ -11828,7 +11828,7 @@ local function refreshCodeObjects()
                     local missed = flight
                     flight = nil
                     local ok, err = pcall(missed.callback, false, "Game Reply Not Captured")
-                    if not ok then warn("Aetherion Auto Code Redeemer: " .. tostring(err)) end
+                    if not ok then warn("Evilion Auto Code Redeemer: " .. tostring(err)) end
                 end
                 if engine then engine:wake() end
                 if riddleSolver then riddleSolver:wake() end
@@ -12363,7 +12363,7 @@ state.persistSettings = function(immediate)
         value.riddleSettings = riddleSolver.settings
         value.fpsBoost = state.fps and state.fps.enabled or false
         value.adminAbuse = adminHelper and adminHelper:snapshot() or {}
-        local ok, reason = env.__aetherion_settings_store:save(value)
+        local ok, reason = env.__evilion_settings_store:save(value)
         if gui and gui.Parent then
             gui:SetAttribute("settings_saved", ok)
             gui:SetAttribute("settings_save_status", reason)
@@ -12481,10 +12481,10 @@ local function installResponses()
                 local reporter, isSuccess = redemptionWebhook, name == "Success"
                 flight = nil
                 local ok, err = pcall(pending.callback, isSuccess, nativeMessage)
-                if not ok then warn("Aetherion Auto Code Redeemer: " .. tostring(err)) end
+                if not ok then warn("Evilion Auto Code Redeemer: " .. tostring(err)) end
                 if isSuccess and reporter then
                     local reported = pcall(reporter.successful, reporter, code, nativeMessage)
-                    if not reported then warn("Aetherion Auto Code Redeemer: Webhook Reporting Failed") end
+                    if not reported then warn("Evilion Auto Code Redeemer: Webhook Reporting Failed") end
                 end
             end
             return original(self, message, ...)
