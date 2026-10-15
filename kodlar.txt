@@ -1,4 +1,4 @@
--- Evilion Auto Code Redeemer
+﻿-- Evilion Auto Code Redeemer
 local Config = {
     SammyUserId = 2678001507, -- Verified group owner: SpyderSammy.
     RequireSenderId = false,
@@ -10909,21 +10909,22 @@ local function make(class, parent, properties)
     object.Parent = parent
     return object
 end
--- One built-in Winter palette. All ornaments use native, passive UI shapes.
+-- One built-in Noel & Winter palette. All ornaments use native, passive UI shapes.
 Halloween = {
-    background = Color3.fromRGB(15, 23, 42),
-    surfaceTop = Color3.fromRGB(30, 58, 95),
-    surfaceBottom = Color3.fromRGB(13, 20, 36),
-    accent = Color3.fromRGB(96, 165, 250),
-    highlight = Color3.fromRGB(200, 230, 255),
-    muted = Color3.fromRGB(148, 175, 210),
-    white = Color3.fromRGB(235, 245, 255),
-    purple = Color3.fromRGB(125, 190, 255),
-    green = Color3.fromRGB(171, 222, 105),
-    red = Color3.fromRGB(248, 101, 111),
-    card = Color3.fromRGB(30, 45, 72),
-    field = Color3.fromRGB(16, 24, 44),
-    off = Color3.fromRGB(55, 75, 105),
+    background = Color3.fromRGB(13, 22, 36),
+    surfaceTop = Color3.fromRGB(24, 46, 75),
+    surfaceBottom = Color3.fromRGB(11, 18, 30),
+    accent = Color3.fromRGB(235, 60, 75),
+    highlight = Color3.fromRGB(215, 240, 255),
+    muted = Color3.fromRGB(145, 175, 205),
+    white = Color3.fromRGB(245, 250, 255),
+    purple = Color3.fromRGB(105, 195, 255),
+    green = Color3.fromRGB(46, 204, 113),
+    red = Color3.fromRGB(245, 60, 75),
+    card = Color3.fromRGB(24, 38, 58),
+    field = Color3.fromRGB(16, 25, 42),
+    off = Color3.fromRGB(50, 70, 95),
+    gold = Color3.fromRGB(255, 215, 75),
 }
 
 function Halloween.shape(parent, name, x, y, w, h, color, radius, z, alpha, rotation)
@@ -10946,7 +10947,7 @@ end
 
 function Halloween.icon(parent, kind, position, pixels, z, tint)
     z = z or 1
-    local holder = make("Frame", parent, {Name = "halloween_" .. kind,
+    local holder = make("Frame", parent, {Name = "noel_" .. kind,
         Position = position, Size = UDim2.fromOffset(pixels, pixels),
         BackgroundTransparency = 1, Active = false, Selectable = false, ZIndex = z})
     local canvas = make("Frame", holder, {Name = "drawing", Size = UDim2.fromOffset(48, 48),
@@ -10958,8 +10959,8 @@ function Halloween.icon(parent, kind, position, pixels, z, tint)
     local function line(name, x1, y1, x2, y2, color, alpha, thickness)
         return Halloween.line(canvas, name, x1, y1, x2, y2, color, z, alpha, thickness)
     end
-    if kind == "spider" then
-        local snow = tint or Color3.fromRGB(200, 230, 255)
+    if kind == "spider" or kind == "snowflake" then
+        local snow = tint or Color3.fromRGB(215, 240, 255)
         line("v", 24, 6, 24, 42, snow, 0, 2)
         line("h", 6, 24, 42, 24, snow, 0, 2)
         line("d1", 11, 11, 37, 37, snow, 0, 2)
@@ -10969,36 +10970,62 @@ function Halloween.icon(parent, kind, position, pixels, z, tint)
         line("b3", 24, 38, 19, 42, snow, 0, 1)
         line("b4", 24, 38, 29, 42, snow, 0, 1)
         part("center", 21, 21, 6, 6, snow, 3)
+    elseif kind == "tree" then
+        local green = Color3.fromRGB(46, 204, 113)
+        part("top", 18, 10, 12, 10, green, 4)
+        part("mid", 14, 18, 20, 12, green, 4)
+        part("bot", 10, 28, 28, 14, green, 4)
+        part("trunk", 21, 40, 6, 7, Color3.fromRGB(139, 69, 19), 1)
+        part("star", 22, 6, 5, 5, Halloween.gold, 2)
     end
     return holder
 end
 
 function Halloween.web(parent, right, width, height, z, alpha)
-    local frost = make("Frame", parent, {Name = right and "winter_right_frost" or "winter_left_frost",
+    local garland = make("Frame", parent, {Name = right and "noel_right_garland" or "noel_left_garland",
         Position = right and UDim2.new(1, -width, 0, 0) or UDim2.fromOffset(0, 0),
         Size = UDim2.fromOffset(width, height), BackgroundTransparency = 1,
         Active = false, Selectable = false, ZIndex = z or 1})
-    local icicles = {
-        {0.06, 0.40}, {0.20, 0.70}, {0.35, 0.35}, {0.50, 0.85},
-        {0.65, 0.45}, {0.80, 0.65}, {0.94, 0.30}
-    }
     local function x(value) return right and width - value or value end
-    local color = Color3.fromRGB(180, 220, 255)
+    -- Icicles
+    local icicles = {
+        {0.08, 0.45}, {0.25, 0.75}, {0.42, 0.40}, {0.60, 0.85},
+        {0.78, 0.50}, {0.92, 0.65}
+    }
+    local iceColor = Color3.fromRGB(190, 230, 255)
     for _, icicle in ipairs(icicles) do
         local px, py = x(width * icicle[1]), height * icicle[2]
-        Halloween.line(frost, "ice1", px - 2, 0, px, py, color, z, alpha or 0.45, 2)
-        Halloween.line(frost, "ice2", px + 2, 0, px, py, color, z, alpha or 0.45, 2)
-        Halloween.shape(frost, "drop", px - 1, py, 3, 3, Color3.fromRGB(240, 250, 255), 2, z, alpha or 0.3)
+        Halloween.line(garland, "ice1", px - 2, 0, px, py, iceColor, z, alpha or 0.45, 2)
+        Halloween.line(garland, "ice2", px + 2, 0, px, py, iceColor, z, alpha or 0.45, 2)
+        Halloween.shape(garland, "drop", px - 1, py, 3, 3, Color3.fromRGB(245, 252, 255), 2, z, alpha or 0.3)
     end
-    Halloween.line(frost, "snow_rim", x(0), 1, x(width), 1, Color3.fromRGB(235, 245, 255), z, alpha or 0.3, 3)
-    return frost
+    -- Pine garland curve
+    local pineGreen = Color3.fromRGB(38, 140, 78)
+    Halloween.line(garland, "garland1", x(0), 4, x(width * 0.45), 18, pineGreen, z, 0.2, 3)
+    Halloween.line(garland, "garland2", x(width * 0.45), 18, x(width), 6, pineGreen, z, 0.2, 3)
+    -- Festive Noel lights
+    local lights = {
+        {0.12, 8, Halloween.red},
+        {0.28, 14, Halloween.gold},
+        {0.45, 18, Halloween.green},
+        {0.65, 15, Halloween.purple},
+        {0.82, 10, Halloween.red},
+    }
+    for index, light in ipairs(lights) do
+        local lx, ly, lcolor = x(width * light[1]), light[2], light[3]
+        Halloween.shape(garland, "bulb" .. index, lx - 2, ly, 5, 6, lcolor, 3, z + 1, 0.05)
+        Halloween.shape(garland, "glow" .. index, lx - 4, ly - 2, 9, 10, lcolor, 5, z, 0.65)
+    end
+    -- Snow rim at the top edge
+    Halloween.line(garland, "snow_rim", x(0), 1, x(width), 1, Color3.fromRGB(245, 252, 255), z, alpha or 0.2, 3)
+    return garland
 end
 
 function Halloween.decorateWindow(surface, compact)
-    local layer = make("Frame", surface, {Name = "winter_scenery", Size = UDim2.fromScale(1, 1),
+    local layer = make("Frame", surface, {Name = "noel_scenery", Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1, Active = false, Selectable = false, ClipsDescendants = true, ZIndex = 1})
-    Halloween.web(layer, false, 65, compact and 50 or 60, 1, 0.5)
-    Halloween.web(layer, true, compact and 65 or 75, compact and 50 or 60, 1, 0.5)
+    Halloween.web(layer, false, 75, compact and 50 or 60, 1, 0.4)
+    Halloween.web(layer, true, compact and 75 or 85, compact and 50 or 60, 1, 0.4)
     return layer
 end
 
@@ -11016,31 +11043,41 @@ end
 
 function Halloween.decorateCard(frame)
     make("UIGradient", frame, {Rotation = 100, Color = ColorSequence.new(
-        Color3.fromRGB(220, 240, 255), Color3.fromRGB(150, 195, 245))})
-    local seam = make("Frame", frame, {Name = "winter_ice_seam", Position = UDim2.fromOffset(0, 14),
-        Size = UDim2.new(0, 2, 1, -28), BackgroundColor3 = Halloween.accent,
-        BackgroundTransparency = 0.2, BorderSizePixel = 0, Active = false, Selectable = false})
+        Color3.fromRGB(235, 245, 255), Color3.fromRGB(170, 210, 250))})
+    local seam = make("Frame", frame, {Name = "noel_ribbon_seam", Position = UDim2.fromOffset(0, 14),
+        Size = UDim2.new(0, 3, 1, -28), BackgroundColor3 = Halloween.accent,
+        BackgroundTransparency = 0.15, BorderSizePixel = 0, Active = false, Selectable = false})
     make("UICorner", seam, {CornerRadius = UDim.new(0, 2)})
 end
 
 function Halloween.knobFace(knob)
     local z = knob.ZIndex + 1
-    local face = make("Frame", knob, {Name = "winter_snowman_face", Size = UDim2.fromScale(1, 1),
+    local face = make("Frame", knob, {Name = "noel_hat_face", Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1, Active = false, Selectable = false, ZIndex = z})
-    for _, x in ipairs({0.28, 0.58}) do
-        local eye = make("Frame", face, {Name = "eye", Position = UDim2.fromScale(x, 0.28),
-            Size = UDim2.fromScale(0.14, 0.14), BackgroundColor3 = Color3.fromRGB(30, 40, 60),
-            BorderSizePixel = 0, ZIndex = z, Active = false, Selectable = false})
-        make("UICorner", eye, {CornerRadius = UDim.new(1, 0)})
-    end
-    local nose = make("Frame", face, {Name = "carrot", Position = UDim2.fromScale(0.42, 0.48),
-        Size = UDim2.fromScale(0.18, 0.12), BackgroundColor3 = Color3.fromRGB(249, 115, 22),
+    -- Santa / Noel Hat
+    local hat = make("Frame", face, {Name = "hat", Position = UDim2.fromScale(0.2, 0.15),
+        Size = UDim2.fromScale(0.6, 0.45), BackgroundColor3 = Halloween.accent,
+        BorderSizePixel = 0, ZIndex = z, Active = false, Selectable = false, Rotation = -12})
+    make("UICorner", hat, {CornerRadius = UDim.new(0.4, 0)})
+    -- Hat White Fur Trim
+    local trim = make("Frame", face, {Name = "trim", Position = UDim2.fromScale(0.12, 0.52),
+        Size = UDim2.fromScale(0.76, 0.18), BackgroundColor3 = Halloween.white,
         BorderSizePixel = 0, ZIndex = z + 1, Active = false, Selectable = false})
-    make("UICorner", nose, {CornerRadius = UDim.new(0.5, 0)})
-    local smile = make("Frame", face, {Name = "smile", Position = UDim2.fromScale(0.32, 0.68),
-        Size = UDim2.fromScale(0.36, 0.10), BackgroundColor3 = Color3.fromRGB(30, 40, 60),
-        BorderSizePixel = 0, ZIndex = z, Active = false, Selectable = false})
-    make("UICorner", smile, {CornerRadius = UDim.new(0.5, 0)})
+    make("UICorner", trim, {CornerRadius = UDim.new(1, 0)})
+    -- Pompom
+    local pompom = make("Frame", face, {Name = "pompom", Position = UDim2.fromScale(0.66, 0.1),
+        Size = UDim2.fromScale(0.22, 0.22), BackgroundColor3 = Halloween.white,
+        BorderSizePixel = 0, ZIndex = z + 2, Active = false, Selectable = false})
+    make("UICorner", pompom, {CornerRadius = UDim.new(1, 0)})
+end
+local SoundService = game:GetService("SoundService")
+local clickSound = Instance.new("Sound")
+clickSound.Name = "EvilionUIClick"
+clickSound.SoundId = "rbxassetid://6895079853"
+clickSound.Volume = 0.65
+pcall(function() clickSound.Parent = SoundService end)
+local function playClick()
+    pcall(function() clickSound:Play() end)
 end
 local accent, highlight, muted = Halloween.accent, Halloween.highlight, Halloween.muted
 local white, cardColor, fieldColor = Halloween.white, Halloween.card, Halloween.field
@@ -11072,6 +11109,7 @@ local function button(parent, name, label, position, size)
     connect(b.MouseLeave, function() animate(outline, {Transparency = 0.58}) end)
     connect(b.MouseEnter, function() animate(b, {BackgroundTransparency = 0.72}) end)
     connect(b.MouseLeave, function() animate(b, {BackgroundTransparency = 0.88}) end)
+    connect(b.Activated, function() playClick() end)
     return b
 end
 
@@ -11111,7 +11149,7 @@ local avatar = make("ImageLabel", profile, {Name = "avatar", Position = UDim2.fr
     Size = UDim2.fromOffset(38, 38), BackgroundColor3 = Halloween.off,
     BackgroundTransparency = 0.35, Image = "", BorderSizePixel = 0})
 round(avatar, 14) stroke(avatar, accent, 0.6)
-local title = text(header, "title", "Evilion Auto Code Redeemer", UDim2.fromOffset(24, 26),
+local title = text(header, "title", utf8.char(0x2744) .. " Evilion Auto Code Redeemer " .. utf8.char(0x2744), UDim2.fromOffset(24, 26),
     UDim2.new(1, -24, 0, 26), 18, white, true)
 title.TextScaled = true
 make("UITextSizeConstraint", title, {MinTextSize = 14, MaxTextSize = 18})
@@ -11156,6 +11194,7 @@ local function toggle(parent, name, label, hint, y, getter, setter)
         animate(knob, {Position = UDim2.fromOffset(on and 26 or 4, 4), BackgroundColor3 = on and white or muted})
     end
     connect(switch.Activated, function()
+        playClick()
         setter(not getter())
         if state.persistSettings then state.persistSettings() end
     end)
@@ -11557,6 +11596,7 @@ local function toolToggle(parent, name, label, y, getter, setter)
     end
     update()
     connect(switch.Activated, function()
+        playClick()
         setter(not (getter() == true)) update()
         if state.persistSettings then state.persistSettings() end
     end)
