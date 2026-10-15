@@ -1,4 +1,4 @@
-﻿-- Evilion Auto Code Redeemer
+-- Evilion Auto Code Redeemer
 local Config = {
     SammyUserId = 2678001507, -- Verified group owner: SpyderSammy.
     RequireSenderId = false,
