@@ -10909,21 +10909,21 @@ local function make(class, parent, properties)
     object.Parent = parent
     return object
 end
--- One built-in Halloween palette. All ornaments use native, passive UI shapes.
+-- One built-in Winter palette. All ornaments use native, passive UI shapes.
 Halloween = {
-    background = Color3.fromRGB(22, 13, 31),
-    surfaceTop = Color3.fromRGB(52, 27, 69),
-    surfaceBottom = Color3.fromRGB(24, 14, 29),
-    accent = Color3.fromRGB(255, 132, 38),
-    highlight = Color3.fromRGB(255, 201, 133),
-    muted = Color3.fromRGB(181, 159, 192),
-    white = Color3.fromRGB(255, 241, 218),
-    purple = Color3.fromRGB(177, 119, 244),
+    background = Color3.fromRGB(15, 23, 42),
+    surfaceTop = Color3.fromRGB(30, 58, 95),
+    surfaceBottom = Color3.fromRGB(13, 20, 36),
+    accent = Color3.fromRGB(96, 165, 250),
+    highlight = Color3.fromRGB(200, 230, 255),
+    muted = Color3.fromRGB(148, 175, 210),
+    white = Color3.fromRGB(235, 245, 255),
+    purple = Color3.fromRGB(125, 190, 255),
     green = Color3.fromRGB(171, 222, 105),
     red = Color3.fromRGB(248, 101, 111),
-    card = Color3.fromRGB(54, 32, 64),
-    field = Color3.fromRGB(25, 16, 33),
-    off = Color3.fromRGB(75, 53, 85),
+    card = Color3.fromRGB(30, 45, 72),
+    field = Color3.fromRGB(16, 24, 44),
+    off = Color3.fromRGB(55, 75, 105),
 }
 
 function Halloween.shape(parent, name, x, y, w, h, color, radius, z, alpha, rotation)
@@ -10959,52 +10959,46 @@ function Halloween.icon(parent, kind, position, pixels, z, tint)
         return Halloween.line(canvas, name, x1, y1, x2, y2, color, z, alpha, thickness)
     end
     if kind == "spider" then
-        local spider = tint or Halloween.red
-        for side = -1, 1, 2 do
-            for leg = 0, 3 do
-                local x, y = 24 + side * 8, 19 + leg * 4
-                line("leg" .. side .. leg .. "a", x, y, 24 + side * 17, y - 6, spider, 0, 2)
-                line("leg" .. side .. leg .. "b", 24 + side * 17, y - 6, 24 + side * 21, y + 2, spider, 0, 2)
-            end
-        end
-        part("body", 16, 15, 17, 23, spider, 9)
-        part("head", 18, 9, 13, 13, spider, 7)
-        part("left_eye", 21, 14, 2, 3, Halloween.highlight, 1)
-        part("right_eye", 26, 14, 2, 3, Halloween.highlight, 1)
+        local snow = tint or Color3.fromRGB(200, 230, 255)
+        line("v", 24, 6, 24, 42, snow, 0, 2)
+        line("h", 6, 24, 42, 24, snow, 0, 2)
+        line("d1", 11, 11, 37, 37, snow, 0, 2)
+        line("d2", 37, 11, 11, 37, snow, 0, 2)
+        line("b1", 24, 10, 19, 6, snow, 0, 1)
+        line("b2", 24, 10, 29, 6, snow, 0, 1)
+        line("b3", 24, 38, 19, 42, snow, 0, 1)
+        line("b4", 24, 38, 29, 42, snow, 0, 1)
+        part("center", 21, 21, 6, 6, snow, 3)
     end
     return holder
 end
 
 function Halloween.web(parent, right, width, height, z, alpha)
-    local web = make("Frame", parent, {Name = right and "halloween_right_cobweb" or "halloween_left_cobweb",
+    local frost = make("Frame", parent, {Name = right and "winter_right_frost" or "winter_left_frost",
         Position = right and UDim2.new(1, -width, 0, 0) or UDim2.fromOffset(0, 0),
         Size = UDim2.fromOffset(width, height), BackgroundTransparency = 1,
         Active = false, Selectable = false, ZIndex = z or 1})
-    local rays = {{1, 0.1}, {0.96, 0.38}, {0.76, 0.72}, {0.4, 0.94}, {0.08, 1}}
+    local icicles = {
+        {0.06, 0.40}, {0.20, 0.70}, {0.35, 0.35}, {0.50, 0.85},
+        {0.65, 0.45}, {0.80, 0.65}, {0.94, 0.30}
+    }
     local function x(value) return right and width - value or value end
-    for index, ray in ipairs(rays) do
-        Halloween.line(web, "ray" .. index, x(0), 0, x(width * ray[1]), height * ray[2],
-            Halloween.muted, z, alpha or 0.66)
+    local color = Color3.fromRGB(180, 220, 255)
+    for _, icicle in ipairs(icicles) do
+        local px, py = x(width * icicle[1]), height * icicle[2]
+        Halloween.line(frost, "ice1", px - 2, 0, px, py, color, z, alpha or 0.45, 2)
+        Halloween.line(frost, "ice2", px + 2, 0, px, py, color, z, alpha or 0.45, 2)
+        Halloween.shape(frost, "drop", px - 1, py, 3, 3, Color3.fromRGB(240, 250, 255), 2, z, alpha or 0.3)
     end
-    for ring = 1, 4 do
-        local factor = ring / 4
-        for index = 1, #rays - 1 do
-            local a, b = rays[index], rays[index + 1]
-            Halloween.line(web, "silk" .. ring .. "_" .. index,
-                x(width * a[1] * factor), height * a[2] * factor,
-                x(width * b[1] * factor), height * b[2] * factor,
-                Halloween.muted, z, alpha or 0.66)
-        end
-    end
-    return web
+    Halloween.line(frost, "snow_rim", x(0), 1, x(width), 1, Color3.fromRGB(235, 245, 255), z, alpha or 0.3, 3)
+    return frost
 end
 
 function Halloween.decorateWindow(surface, compact)
-    -- Corner webs stay in the header; content and controls have no background ornaments.
-    local layer = make("Frame", surface, {Name = "halloween_scenery", Size = UDim2.fromScale(1, 1),
+    local layer = make("Frame", surface, {Name = "winter_scenery", Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1, Active = false, Selectable = false, ClipsDescendants = true, ZIndex = 1})
-    Halloween.web(layer, false, 55, compact and 52 or 60, 1, 0.8)
-    Halloween.web(layer, true, compact and 66 or 74, compact and 52 or 60, 1, 0.76)
+    Halloween.web(layer, false, 65, compact and 50 or 60, 1, 0.5)
+    Halloween.web(layer, true, compact and 65 or 75, compact and 50 or 60, 1, 0.5)
     return layer
 end
 
@@ -11022,32 +11016,31 @@ end
 
 function Halloween.decorateCard(frame)
     make("UIGradient", frame, {Rotation = 100, Color = ColorSequence.new(
-        Color3.fromRGB(255, 235, 220), Color3.fromRGB(183, 143, 208))})
-    local seam = make("Frame", frame, {Name = "halloween_candle_seam", Position = UDim2.fromOffset(0, 14),
+        Color3.fromRGB(220, 240, 255), Color3.fromRGB(150, 195, 245))})
+    local seam = make("Frame", frame, {Name = "winter_ice_seam", Position = UDim2.fromOffset(0, 14),
         Size = UDim2.new(0, 2, 1, -28), BackgroundColor3 = Halloween.accent,
-        BackgroundTransparency = 0.26, BorderSizePixel = 0, Active = false, Selectable = false})
+        BackgroundTransparency = 0.2, BorderSizePixel = 0, Active = false, Selectable = false})
     make("UICorner", seam, {CornerRadius = UDim.new(0, 2)})
 end
 
 function Halloween.knobFace(knob)
     local z = knob.ZIndex + 1
-    local face = make("Frame", knob, {Name = "halloween_lantern_face", Size = UDim2.fromScale(1, 1),
+    local face = make("Frame", knob, {Name = "winter_snowman_face", Size = UDim2.fromScale(1, 1),
         BackgroundTransparency = 1, Active = false, Selectable = false, ZIndex = z})
-    for index, x in ipairs({0.23, 0.59}) do
-        make("Frame", face, {Name = "eye", Position = UDim2.fromScale(x, 0.26),
-            Size = UDim2.fromScale(0.21, 0.17), Rotation = index == 1 and 28 or -28,
-            BackgroundColor3 = Halloween.background, BorderSizePixel = 0, ZIndex = z,
-            Active = false, Selectable = false})
+    for _, x in ipairs({0.28, 0.58}) do
+        local eye = make("Frame", face, {Name = "eye", Position = UDim2.fromScale(x, 0.28),
+            Size = UDim2.fromScale(0.14, 0.14), BackgroundColor3 = Color3.fromRGB(30, 40, 60),
+            BorderSizePixel = 0, ZIndex = z, Active = false, Selectable = false})
+        make("UICorner", eye, {CornerRadius = UDim.new(1, 0)})
     end
-    local mouth = make("Frame", face, {Name = "grin", Position = UDim2.fromScale(0.22, 0.53),
-        Size = UDim2.fromScale(0.58, 0.3), BackgroundColor3 = Halloween.background,
+    local nose = make("Frame", face, {Name = "carrot", Position = UDim2.fromScale(0.42, 0.48),
+        Size = UDim2.fromScale(0.18, 0.12), BackgroundColor3 = Color3.fromRGB(249, 115, 22),
+        BorderSizePixel = 0, ZIndex = z + 1, Active = false, Selectable = false})
+    make("UICorner", nose, {CornerRadius = UDim.new(0.5, 0)})
+    local smile = make("Frame", face, {Name = "smile", Position = UDim2.fromScale(0.32, 0.68),
+        Size = UDim2.fromScale(0.36, 0.10), BackgroundColor3 = Color3.fromRGB(30, 40, 60),
         BorderSizePixel = 0, ZIndex = z, Active = false, Selectable = false})
-    make("UICorner", mouth, {CornerRadius = UDim.new(0.5, 0)})
-    for index, x in ipairs({0.33, 0.61}) do
-        make("Frame", face, {Name = "fang" .. index, Position = UDim2.fromScale(x, 0.51),
-            Size = UDim2.fromScale(0.12, 0.17), BackgroundColor3 = Halloween.white,
-            BorderSizePixel = 0, ZIndex = z + 1, Active = false, Selectable = false})
-    end
+    make("UICorner", smile, {CornerRadius = UDim.new(0.5, 0)})
 end
 local accent, highlight, muted = Halloween.accent, Halloween.highlight, Halloween.muted
 local white, cardColor, fieldColor = Halloween.white, Halloween.card, Halloween.field
@@ -11085,7 +11078,7 @@ end
 gui = make("ScreenGui", playerGui, {Name = GUI_NAME, ResetOnSpawn = false, IgnoreGuiInset = false,
     DisplayOrder = 90, ZIndexBehavior = Enum.ZIndexBehavior.Sibling})
 state.gui = gui
-gui:SetAttribute("theme", "Halloween")
+gui:SetAttribute("theme", "Winter")
 local root = make("Frame", gui, {Name = "safe_area", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1})
 local shadow = make("Frame", root, {Name = "shadow", BackgroundColor3 = Color3.new(0, 0, 0),
     BackgroundTransparency = 0.65, BorderSizePixel = 0, ZIndex = 0})
@@ -11262,7 +11255,7 @@ round(senderSurface, 22)
 make("UIGradient", senderSurface, {Rotation = 115, Color = ColorSequence.new(
     Halloween.surfaceTop, Halloween.surfaceBottom)})
 Halloween.decorateWindow(senderSurface, true)
-senderWindow:SetAttribute("theme", "Halloween")
+senderWindow:SetAttribute("theme", "Winter")
 local senderScale = make("UIScale", senderWindow, {Scale = 1})
 local senderHeader = make("Frame", senderWindow, {Name = "header", Size = UDim2.new(1, -108, 0, 66),
     BackgroundTransparency = 1, Active = true})
@@ -11428,7 +11421,7 @@ local function makeToolWindow(name, title, size)
     make("UIGradient", surface, {Rotation = 115, Color = ColorSequence.new(
         Halloween.surfaceTop, Halloween.surfaceBottom)})
     Halloween.decorateWindow(surface, true)
-    window:SetAttribute("theme", "Halloween")
+    window:SetAttribute("theme", "Winter")
     local header = make("Frame", window, {Name = "header", Size = UDim2.new(1, -108, 0, 62),
         BackgroundTransparency = 1, Active = true, ZIndex = 121})
     text(header, "title", title, UDim2.fromOffset(30, 19), UDim2.new(1, -40, 0, 24), 16, white, true)
